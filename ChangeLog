@@ -1,0 +1,145 @@
+
+20140105:
+	* Moved test suite utility code into zdtutils.[ch].
+	* Added balls.c test program.
+	* Moved to GitHub.
+
+20130325:
+	* zd_Fill() no longer allowed under root. (Pointless special cases...)
+
+20130323:
+	* The basic transform inlines no longer deal with entities; only raw
+	  matrices and offsets.
+
+20130322:
+	* zd_Layer() and zd_Window() initialize bg color to opaque black.
+	* Added glClearStencil(), glStencilOp(), glStencilFunc() and
+	  glColorMask() to GLI.
+	* Implemented OpenGL stencil clipping for rotated windows.
+
+20130321:
+	* Scale 0.0 should be safe.
+	* Removed the initial transform arguments from entity creation calls.
+	* Added enumerated parameter API.
+	* zd_Fill() can now safely be a child of the root entity.
+	* Added -G and -S switches to zdtest.
+	* Less random scene content in zdtest.
+
+20130320:
+	* Added zd_CalculateMatrix(), zd_InvTransformPointM() etc.
+	* zd_Fill() texture transform now works correctly.
+
+20130319:
+	* zdtest uses the state where appropriate, to get the actual error
+	  codes when aborting due to failures.
+
+20130318:
+	* Added zd_Fill() entity.
+	* Added zd_SetTexture().
+
+20130317:
+	* Added zd_Primitive() and ZD_primitives.
+	* Moved texture DecRef from backends into zeedraw.c.
+
+20130316:
+	* All entity creation calls now have a 'flags' argument.
+	* Added zd_Vertex*D(), zd_Vertices(), zd_TexCoord() and zd_TexCoords().
+
+20130315:
+	* Added frame rate calculation and -s switch to zdtest.
+	* Added zdogl_apply_matrix() for using OpenGL transforms. However, the
+	  custom transforms are 34% faster here, so, disabled by default!
+
+20130314:
+	* Window clipping and background coordinates are transformed properly.
+	* Sprite Render() uses zd_TransformPoint() - no legacy OpenGL calls.
+
+20130313:
+	* ZD_RETHINK now actually applied recursively, as intended.
+	* Added zd_TransformPoint().
+	* Implemented axis-aligned clipping for windows via glScissor().
+
+20130312:
+	* OpenGL backend PreRender()/PostRender() just sets the matrices to
+	  identity, and layers and windows deal only with the MODELVIEW matrix.
+	* Layers now handle translucent background colors properly.
+	* Added ZD_SETORIGO flag for zd_Window() to set origo of the window to
+	  (x, y), instead of the default; keeping that of the parent entity.
+	* Added initialization of optional callback fields in zd_NewEntity().
+	* Sanity check for layers; they can only ever be children of root!
+	* Added glScissor() to GLI.
+	* Implemented zd_Window(). (Clipping unfinished!)
+
+20130311:
+	* Added RenderPost() (post children) entity backend callback.
+	* Added zd_Layer().
+	* Added zd_View() for changing the extents of entities that support it.
+	* Added ZD_CLEAR entity flag for layers and windows.
+	* Added 'kind' entity type field, and 'kind' arguments to
+	  zd_AllocEntity() and zd_NewEntity().
+	* Added zd_Color().
+	* Removed "Set" from zd_SetPosition(), zd_SetScale() etc.
+	* Removed the zd_*Transform() calls.
+	* Removed ZD_window.x and .y. (The real entity position is supposed to
+	  be the "live" position of the window! We only add w and h.)
+	* Proper antialiasing of the generated sprite in zdtest.
+	* Added fade-in effect to zdtest.
+	* Added zd_BGColor() for layers and windows.
+	* Added glColor4f() to GLI.
+
+20130310:
+	* Added flags argument to zd_Open(). (No flags yet!)
+	* Added reference counting to entities.
+	* Added zd_Retain*()/zd_Release*() calls.
+	* Added context argument to zd_Open(), for passing the display
+	  SDL_surface or similar object (driver dependent) representing the
+	  rendering context.
+
+20130309:
+	* Added ZD_entity.t* transformed parameters for rendering.
+	* Implemented nested entity transforms with rotation/scaling matrix.
+
+20130308:
+	* Implemented OpenGL texture uploading.
+	* Improved the zdtest sprite texture generator.
+	* Added ZD_VISIBLE flag.
+	* Added relative transform manipulation; zd_Move(), zd_Rotate() etc.
+	* Added zd_First() and zd_Next().
+	* Added animation; zd_CMove(), zd_CRotate() etc.
+
+20130307:
+	* Entity graphs are now recursively destroyed as intended.
+	* Added zd_ReleaseTexture().
+	* Added OpenGL context and state initialization code.
+
+20130306:
+	* Pixel endian defined as memory byte order, similar to OpenGL.
+	* Started porting OpenGL code from the EEL OpenGL binding.
+	* Added state.texturesize and zd_Bump*Size() inlines.
+	* Added entity z coordinate and zd_Position3D().
+
+20130305:
+	* ZD_RGB is now 32 bpp with padding - not 24 bpp.
+	* Added backend method UploadTexture().
+	* Added texture method stubs to the backends.
+
+20130304:
+	* Added zd_OnDemandTexture().
+	* Added zd_TextureFromData().
+
+20130303:
+	* Texture locking.
+	* Implemented zd_LockTextureRegion().
+
+20130226:
+	* Texture creation and texture render callbacks.
+
+20130113:
+	* Ported the OpenGL loader/interface from EELBox.
+	* Beginnings of the OpenGL backend.
+
+20130105...:
+	* Design and framework implementation.
+
+20130103:
+	* Started new CMake project.

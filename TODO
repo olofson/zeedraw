@@ -1,0 +1,180 @@
+
+BUGS:
+
+	* FILL entity issues:
+		* Position/move (scrolling) isn't implemented.
+
+
+-----------------------------
+
+
+* Blend modes!
+
+* Polygon texturing:
+	* By default, auto-generate texcoords from vertex coordinates.
+		* Scale factor or full transform for this, maybe? Or is this a
+		  property of shaders?
+
+* Sprite size aspect ratio with rectangular textures!? (Hardwired square now.)
+	* Sprite 'aspect' field or similar? By default (0), the width would be
+	  unity (entity.scale) and the height would be derived from there to
+	  match the texture aspect ratio. 1.0 makes it square regardless of
+	  texture aspect ratio, 2.0 ==> height 2.0 * width etc.
+
+* Generic multitexture blending/crossfade feature! Shaders...?
+	* Wire shader parameters to entity parameters! (Ex: Wire entity
+	  rotation to control the "FadeRot" shader automatically.)
+
+
+
+* Spirals or other non-random placement patterns for the sprites in zdtest!
+
+* Entities/figures/properties?
+	* Fill styles:
+		* Off
+		* Triangles
+		* Quads
+		* TriangleStrip
+		* TriangleFan
+	* Edges:
+		* Off
+		* Lines
+	* Vertices:
+		* Off
+		* Points
+	* Flags for entity/primitive/object:
+		* Link child entities to vertices!
+		* Get vertex coordinates from child entity positions!
+
+* Remove the transform arguments from entity constructors? Those arguments
+  aren't covering everything anyway, and when wiring to physics, parent entity
+  vertices or whatever, they become redundant!
+
+* Test double vs float!
+	* Do we really need double on the graphics rendering level?
+	* What about double on Android tablets (ARM) and the like?
+
+* If wrapping is requested for any NPOT texture, fail with ZD_NPOTWRAP! (This
+  seems to be unreliable even with modern OpenGL drivers, and it's complex and
+  expensive to implement in software, etc...)
+	* How about clamping? Should we even support it at all? It's nasty to
+	  implement in software, and is equally problematic with subtextures
+	  over OpenGL.
+
+* Temporary hack for OpenGL textures: If the driver doesn't support NPOT sizes,
+  round up and set up x1, y1, x2, y2 accordingly!
+
+* No explicit subtextures!
+	* No power-of-2 restrictions!
+	* Rendering off the edge of a texture results in undefined behavior!
+	* Subtexture allocation transparently handled by the backend where
+	  needed.
+	* Filtering/interpolation borders added automatically as needed.
+	* Special case for clamping and wrapping textures:
+		* Need to be power-of-two sized!
+		* Typically implemented as individual physical textures on the
+		  backend level.
+
+* Virtual textures!
+	* Typically very large texture, implemented using one or more physical
+	  textures for caching and rendering, and callbacks for rendering areas
+	  on demand.
+	* Handle texture filtering + tiling using overlap borders!
+	* Rendering from one will first ensure that all areas used are
+	  available as physical textures.
+	* Render-ahead for scrolling...?
+		* Alternatively, we do pixel exact rendering requests,
+		  eliminating the need for deferred asynchronous rendering.
+
+* Clock entity for animation timebases?
+	* Cascaded clocks; clocks deriving their timing from other clocks?
+
+* V + H scale? Without it, we need special logic for zd_View() - and this might
+  be useful anyway, for GUIs, special effects etc. And, it's a trivial change.
+
+* Point transform tools, so we can translate cursor coordinates and the like
+  between back and forth between arbitrary entities!
+	* This can be used for translating mouse coordinates from the root
+	  entity/display coordinate system to the local coordinate systems of
+	  arbitrary entities, regardless of their position, scale and rotation.
+
+* Debug visualization tools!
+	* To avoid main path overhead, and also to keep debug output visible at
+	  all times, we should probably implement this as a separate function
+	  that travelses the whole graph, drawing outlines etc, after the actual
+	  scene has been rendered.
+
+* Maybe, if useful and sensible to implement:
+	* zd_SetContext() for switching to a different context of the same type
+	  as passed to the initial zd_Open(), still using the same backend.
+	* zd_Reopen() to close the current backend, open a new one, and
+	  transfer the full state; textures, scene etc.
+	* zd_SetTarget() for rendering into a texture.
+		* Accelerated backends should use render-to-texture for this!
+		* Fall back to software rasterizer (software backend) if
+		  necessary.
+		* Doesn't this overlap a lot with buffered entities...?
+			* We would need some way of accessing the buffer
+			  texture of a buffered entity.
+			* Buffered entities may not actually be rendering into
+			  textures! That's really just a performance hack.
+
+
+OpenGL backend and GLI
+----------------------
+	* OpenGL error handling!
+		* GL --> ZD error translation.
+
+	* Add glColor() and possibly other state to the gli state cache?
+
+
+Structured graphics/2D model/map editor
+---------------------------------------
+	* Handy feature: Serialize current scene!
+		* Generate EEL parsable text or binary data describing the
+		  current state of the scene graph.
+		* Optionally track and store scene graph changes.
+		* Optionally include texture names or similar.
+		* Optionally include actual texture data?
+	* Use for:
+		* Parallax layers.
+		* GUI elements.
+		* Entity visualization.
+	* Construct "surfaces" out of:
+		* Polygons with loaded and ZeeSpace rendered textures.
+		* FadeRot textures!
+		* Drawing primitives!
+		* Procedural texture effects!
+		* Other models/maps, recursively!
+	* Shaders with blend modes, modulation etc...
+	* Particle effects!
+		* Optional physics based particle effects processed in
+		  background threads? (Just visual effects - minor sync
+		  glitches are acceptable.)
+	* Interfaces for scripting and physics!
+	* Options/alternates for quality settings, game modes etc!
+	* Modulators that can be wired to arbitrary entity parameters, to
+	  implement simple animation without per-frame script interaction.
+		* Might want to wire these to "controls" (special entities)
+		  rather than hardwired timers and whatnot, allowing them to be
+		  used much like skeletal animation systems, and also having
+		  "idle" animations stop when the game is paused, if desired.
+	* Design for optimized native rendering engine!
+		* Maybe this is the structured scene graph engine, ZeeDraw?
+		* Implement a backend that renders using ZeeSpace!
+	* Thread safe slave contexts, allowing multiple threads to update the
+	  graph asynchronously?
+	* Any point in using OpenGL style "names" in the API, or do we just
+	  build a lean and mean C API with pointers? Problem is, we don't
+	  really want to wrap every single entity as an EEL object just to keep
+	  them around, but we still need to update some of them dynamically.
+		* Opaque pointers - function call interface. (Entities need a
+		  fair bit of internal logic to efficiently update changes in
+		  the scene graph, so we can't have application code randomly
+		  modifying struct fields.)
+		* Reference counting! Containers "own" their children, and any
+		  external entities used, such as textures, models etc.
+			* API allows the application to grab entities, as they
+			  may otherwise disappear again as a result of the next
+			  API call!
+

@@ -1,0 +1,16 @@
+#
+# pkgconfig for ZeeDraw
+#
+
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}
+includedir=${prefix}/include/ZeeDraw
+
+Name: ZeeDraw
+Description: ZeeDraw - a scene graph rendering engine.
+Version: 0.1.0
+Requires: sdl >= 1.2.10
+Libs: -L${libdir} -lzeedraw
+Libs.private: -L${libdir} -lSDL
+Cflags: -I${includedir}
